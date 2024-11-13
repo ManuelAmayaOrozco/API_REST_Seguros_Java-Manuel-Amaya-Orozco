@@ -21,6 +21,62 @@ public class SeguroService {
         this.asistenciaMedicaRepository = asistenciaMedicaRepository;
     }
 
+    public SeguroDTO create(SeguroDTO seguroDTO) {
+
+        //Comprobación NIF
+        if (seguroDTO.getNif().length() != 9) {
+
+            throw new BadRequestException("El campo NIF no tiene un formato válido.");
+
+        }
+
+        //Comprobación Nombre
+        if (seguroDTO.getNombre().isEmpty()) {
+
+            throw new BadRequestException("El campo Nombre no puede estar vacío.");
+
+        }
+
+        //Comprobación Ape1
+        if (seguroDTO.getApe1().isEmpty()) {
+
+            throw new BadRequestException("El campo Ape1 no puede estar vacío.");
+
+        }
+
+        //Comprobación Edad
+        if (seguroDTO.getEdad() < 18) {
+
+            throw new BadRequestException("No es posible ser menor de edad para hacer un seguro.");
+
+        }
+
+        //Comprobación NumHijos
+        if (seguroDTO.getNumHijos() < 0) {
+
+            throw new BadRequestException("Un seguro no puede registrar hijos si no está casado.");
+
+        } else if (!seguroDTO.isCasado() && seguroDTO.getNumHijos() != 0) {
+
+            throw new BadRequestException("Un seguro no puede registrar hijos si no está casado.");
+
+        }
+
+        //Comprobación Embarazada
+        if (seguroDTO.isEmbarazada() && seguroDTO.getSexo().equalsIgnoreCase("hombre")) {
+
+            throw new BadRequestException("El campo embarazada no puede ser true si el asegurado es hombre.");
+
+        }
+
+        Seguro seguro = mapToSeguro(seguroDTO);
+
+        seguro = seguroRepository.save(seguro);
+
+        return mapToDTO(seguro);
+
+    }
+
     public SeguroDTO getById(String id) {
 
         // Parsear el id a Long

@@ -2,6 +2,7 @@ package com.es.segurosinseguros.Controller;
 
 import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
+import com.es.segurosinseguros.Exception.InternalServerErrorException;
 import com.es.segurosinseguros.Exception.NotFoundException;
 import com.es.segurosinseguros.Service.SeguroService;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,26 @@ public class SeguroController {
 
     public SeguroController(SeguroService seguroService) {
         this.seguroService = seguroService;
+    }
+
+    @PostMapping
+    public ResponseEntity<SeguroDTO> create(
+            @RequestBody SeguroDTO seguroDTO
+    ) {
+
+        SeguroDTO s = seguroService.create(seguroDTO);
+
+        if(s == null) {
+
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al intentar generar el seguro.");
+
+        } else {
+            ResponseEntity<SeguroDTO> respuesta = new ResponseEntity<SeguroDTO>(
+                    s, HttpStatus.CREATED
+            );
+            return respuesta;
+        }
+
     }
 
     @GetMapping("/{id}")
