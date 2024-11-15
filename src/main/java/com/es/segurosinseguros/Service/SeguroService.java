@@ -10,6 +10,9 @@ import com.es.segurosinseguros.Repository.SeguroRepository;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class SeguroService {
 
@@ -101,6 +104,99 @@ public class SeguroService {
         } else {
             // 3 Convertir s (Seguro) a SeguroDTO
             return mapToDTO(s);
+        }
+
+    }
+
+    public List<SeguroDTO> getAll() {
+
+        List<SeguroDTO> listaDeDTOs = new ArrayList<>();
+
+        List<Seguro> listaSeg = seguroRepository.findAll();
+
+        for (Seguro s: listaSeg) {
+
+            listaDeDTOs.add(mapToDTO(s));
+
+        }
+
+        return listaDeDTOs;
+
+    }
+
+    public SeguroDTO update(String id, SeguroDTO seguroDTO) {
+
+        // Parsear el id a Long
+        Long idL = 0L;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //Comprobación NIF
+        if (!validarNIF(seguroDTO.getNif())) {
+
+            throw new BadRequestException("El campo NIF no tiene un formato válido.");
+
+        }
+
+        //Comprobación Nombre
+        if (seguroDTO.getNombre().isEmpty()) {
+
+            throw new BadRequestException("El campo Nombre no puede estar vacío.");
+
+        }
+
+        //Comprobación Ape1
+        if (seguroDTO.getApe1().isEmpty()) {
+
+            throw new BadRequestException("El campo Ape1 no puede estar vacío.");
+
+        }
+
+        //Comprobación Edad
+        if (seguroDTO.getEdad() < 18) {
+
+            throw new BadRequestException("No es posible ser menor de edad para hacer un seguro.");
+
+        }
+
+        //Comprobación NumHijos
+        if (seguroDTO.getNumHijos() < 0) {
+
+            throw new BadRequestException("Un seguro no puede registrar hijos si no está casado.");
+
+        } else if (!seguroDTO.isCasado() && seguroDTO.getNumHijos() != 0) {
+
+            throw new BadRequestException("Un seguro no puede registrar hijos si no está casado.");
+
+        }
+
+        //Comprobación Embarazada
+        if (seguroDTO.isEmbarazada() && seguroDTO.getSexo().equalsIgnoreCase("hombre")) {
+
+            throw new BadRequestException("El campo embarazada no puede ser true si el asegurado es hombre.");
+
+        }
+
+        // Compruebo que el seguro existe en la BDD
+        Seguro s = seguroRepository.findById(idL).orElse(null);
+
+        if (s == null) {
+
+            return null;
+
+        } else {
+
+            Seguro newS = mapToSeguro(seguroDTO);
+
+            newS.setIdSeguro(s.getIdSeguro());
+
+            seguroRepository.save(newS);
+
+            return mapToDTO(newS);
+
         }
 
     }

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/seguros")
 public class SeguroController {
@@ -45,7 +47,7 @@ public class SeguroController {
     ) {
 
         //1º Compruebo que el id no es null
-        if (id == null || id.equals("a")) {
+        if (id == null) {
             //LANZO UNA EXCEPCION PROPIA
             /*
             a) Qué código de estado devolveríais -> BAD_REQUEST (400)
@@ -73,6 +75,59 @@ public class SeguroController {
             throw new NotFoundException("No se encuentra ningún seguro con el ID especificado.");
         } else {
 
+            ResponseEntity<SeguroDTO> respuesta = new ResponseEntity<SeguroDTO>(
+                    s, HttpStatus.OK
+            );
+            return respuesta;
+        }
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SeguroDTO>> getAll() {
+
+        List<SeguroDTO> s = seguroService.getAll();
+
+        if(s == null) {
+
+            throw new NotFoundException("No se encuentra ningún seguro para mostrar.");
+
+        } else {
+            ResponseEntity<List<SeguroDTO>> respuesta = new ResponseEntity<List<SeguroDTO>>(
+                    s, HttpStatus.OK
+            );
+            return respuesta;
+        }
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SeguroDTO> update(
+            @RequestBody SeguroDTO seguroDTO,
+            @PathVariable String id
+    ) {
+
+        //1º Compruebo que el id no es null
+        if (id == null) {
+            //LANZO UNA EXCEPCION PROPIA
+            /*
+            a) Qué código de estado devolveríais -> BAD_REQUEST (400)
+            b) Qué información daríais al cliente
+            -> Un mensaje: "El ID no tiene un formato válido."
+            -> La URI: localhost:8080/seguros/x
+            c) Nombre a nuestra excepción -> BadRequestException
+             */
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //2º Si no viene vacio, llamo al Service
+        SeguroDTO s = seguroService.update(id, seguroDTO);
+
+        if(s == null) {
+
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al intentar actualizar el seguro.");
+
+        } else {
             ResponseEntity<SeguroDTO> respuesta = new ResponseEntity<SeguroDTO>(
                     s, HttpStatus.OK
             );
