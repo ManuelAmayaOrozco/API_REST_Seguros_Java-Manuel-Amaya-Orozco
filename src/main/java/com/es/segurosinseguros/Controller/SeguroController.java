@@ -4,6 +4,7 @@ import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
 import com.es.segurosinseguros.Exception.InternalServerErrorException;
 import com.es.segurosinseguros.Exception.NotFoundException;
+import com.es.segurosinseguros.Service.AsistenciaMedicaService;
 import com.es.segurosinseguros.Service.SeguroService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.List;
 public class SeguroController {
 
     private final SeguroService seguroService;
+    private final AsistenciaMedicaService asistenciaMedicaService;
 
-    public SeguroController(SeguroService seguroService) {
+    public SeguroController(SeguroService seguroService, AsistenciaMedicaService asistenciaMedicaService) {
         this.seguroService = seguroService;
+        this.asistenciaMedicaService = asistenciaMedicaService;
     }
 
     @PostMapping
