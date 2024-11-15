@@ -4,6 +4,7 @@ import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
 import com.es.segurosinseguros.Exception.InternalServerErrorException;
 import com.es.segurosinseguros.Exception.NotFoundException;
+import com.es.segurosinseguros.Model.AsistenciaMedica;
 import com.es.segurosinseguros.Model.Seguro;
 import com.es.segurosinseguros.Repository.AsistenciaMedicaRepository;
 import com.es.segurosinseguros.Repository.SeguroRepository;
@@ -197,6 +198,49 @@ public class SeguroService {
 
             return mapToDTO(newS);
 
+        }
+
+    }
+
+    public SeguroDTO delete(String id) {
+
+        // Parsear el id a Long
+        Long idL = 0L;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        Seguro s = null;
+        try {
+            s = seguroRepository
+                    .findById(idL)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al buscar el seguro por su ID.");
+        }
+
+        if(s == null) {
+            throw new NotFoundException("No se encuentra ningún seguro con el ID especificado.");
+        } else {
+            List<AsistenciaMedica> asistencias = asistenciaMedicaRepository.findAll();
+
+            for (AsistenciaMedica a: asistencias) {
+
+                if (s.getIdSeguro() == idL) {
+
+                    asistenciaMedicaRepository.delete(a);
+
+                }
+
+            }
+
+            SeguroDTO seguroDTO = mapToDTO(s);
+
+            seguroRepository.delete(s);
+
+            return seguroDTO;
         }
 
     }

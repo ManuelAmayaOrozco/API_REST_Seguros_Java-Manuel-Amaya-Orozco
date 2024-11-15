@@ -136,4 +136,38 @@ public class SeguroController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SeguroDTO> delete(
+            @PathVariable String id
+    ) {
+
+        //1º Compruebo que el id no es null
+        if (id == null) {
+            //LANZO UNA EXCEPCION PROPIA
+            /*
+            a) Qué código de estado devolveríais -> BAD_REQUEST (400)
+            b) Qué información daríais al cliente
+            -> Un mensaje: "El ID no tiene un formato válido."
+            -> La URI: localhost:8080/seguros/x
+            c) Nombre a nuestra excepción -> BadRequestException
+             */
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //2º Si no viene vacio, llamo al Service
+        SeguroDTO s = seguroService.delete(id);
+
+        if(s == null) {
+
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al intentar eliminar el seguro.");
+
+        } else {
+            ResponseEntity<SeguroDTO> respuesta = new ResponseEntity<SeguroDTO>(
+                    s, HttpStatus.NO_CONTENT
+            );
+            return respuesta;
+        }
+
+    }
+
 }
