@@ -24,7 +24,7 @@ public class SeguroService {
     public SeguroDTO create(SeguroDTO seguroDTO) {
 
         //Comprobación NIF
-        if (seguroDTO.getNif().length() != 9) {
+        if (!validarNIF(seguroDTO.getNif())) {
 
             throw new BadRequestException("El campo NIF no tiene un formato válido.");
 
@@ -135,5 +135,79 @@ public class SeguroService {
         seguro.setCasado(seguroDTO.isCasado());
         seguro.setEmbarazada(seguroDTO.isEmbarazada());
         return seguro;
+    }
+
+    private Boolean validarNIF(String nif) {
+
+        String letraMayuscula = "";
+
+        if (nif.length() != 9 || !Character.isLetter(nif.charAt(8))) {
+
+            return false;
+
+        }
+
+        letraMayuscula = (nif.substring(8)).toUpperCase();
+
+        if (soloNumeros(nif) == true && letraNIF(nif).equals(letraMayuscula)) {
+
+            return true;
+
+        } else {
+
+            return false;
+
+        }
+
+    }
+
+    private Boolean soloNumeros(String nif) {
+
+        int i, j = 0;
+        String numero = "";
+        String miNIF = "";
+        String[] unoNueve = {"0","1","2","3","4","5","6","7","8","9"};
+
+        for (i = 0; i < nif.length() - 1; i++) {
+
+            numero = nif.substring(i, i + 1);
+
+            for (j = 0; j < unoNueve.length; j++) {
+
+                if (numero.equals(unoNueve[j])) {
+
+                    miNIF += unoNueve[j];
+
+                }
+
+            }
+
+        }
+
+        if (miNIF.length() != 8) {
+
+            return false;
+
+        } else {
+
+            return true;
+
+        }
+
+    }
+
+    private String letraNIF(String nif) {
+
+        int miNIF = Integer.parseInt(nif.substring(0, 8));
+        int resto = 0;
+        String miLetra = "";
+        String[] asignacionLetra = {"T","R","W","A","G","M","Y","F","P","D","X","B","N","J","Z","S","Q","V","H","L","C","K","E"};
+
+        resto = miNIF % 23;
+
+        miLetra = asignacionLetra[resto];
+
+        return miLetra;
+
     }
 }
