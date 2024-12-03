@@ -1,5 +1,6 @@
 package com.es.segurosinseguros.Controller;
 
+import com.es.segurosinseguros.DTO.AsistenciaMedicaDTO;
 import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
 import com.es.segurosinseguros.Exception.InternalServerErrorException;
@@ -37,6 +38,27 @@ public class SeguroController {
         } else {
             ResponseEntity<SeguroDTO> respuesta = new ResponseEntity<SeguroDTO>(
                     s, HttpStatus.CREATED
+            );
+            return respuesta;
+        }
+
+    }
+
+    @PostMapping("/{id}/asistencias")
+    public ResponseEntity<AsistenciaMedicaDTO> createAM(
+            @PathVariable String id,
+            @RequestBody AsistenciaMedicaDTO asistenciaMedicaDTO
+    ) {
+
+        AsistenciaMedicaDTO a = asistenciaMedicaService.create(id, asistenciaMedicaDTO);
+
+        if(a == null) {
+
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al intentar generar la asistencia médica.");
+
+        } else {
+            ResponseEntity<AsistenciaMedicaDTO> respuesta = new ResponseEntity<AsistenciaMedicaDTO>(
+                    a, HttpStatus.CREATED
             );
             return respuesta;
         }

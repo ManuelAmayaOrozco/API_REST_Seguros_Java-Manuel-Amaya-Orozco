@@ -24,6 +24,100 @@ public class AsistenciaMedicaService {
     @Autowired
     private AsistenciaMedicaRepository asistenciaMedicaRepository;
 
+    public AsistenciaMedicaDTO create(String idSeguro, AsistenciaMedicaDTO asistenciaMedicaDTO) {
+
+        // Parsear el id a Long
+        Long idL = 0L;
+        try {
+            idL = Long.parseLong(idSeguro);
+
+            //Comprobar que el Seguro existe
+            List<Seguro> listaSeg = seguroRepository.findAll();
+
+            boolean existe = false;
+
+            for (Seguro s: listaSeg) {
+
+                if (idL == s.getIdSeguro()) {
+
+                    existe = true;
+                    break;
+
+                }
+
+            }
+
+            if (!existe) {
+
+                throw new BadRequestException("El ID del seguro proveido no coincide con ningún seguro.");
+
+            } else {
+
+                asistenciaMedicaDTO.setIdSeguro(idL);
+
+            }
+
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //Comprobación Breve Descripción
+        if (asistenciaMedicaDTO.getBreveDescripcion().isEmpty()) {
+
+            throw new BadRequestException("El campo breveDescripción no puede estar vacío.");
+
+        }
+
+        //Comprobación Lugar
+        if (asistenciaMedicaDTO.getLugar().isEmpty()) {
+
+            throw new BadRequestException("El campo lugar no puede estar vacío.");
+
+        }
+
+        //Comprobación Explicación
+        if (asistenciaMedicaDTO.getExplicacion().isEmpty()) {
+
+            throw new BadRequestException("El campo explicación no puede estar vacío.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getTipoAsistencia() == null) {
+
+            throw new BadRequestException("El campo tipoAsistencia no puede ser nulo.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getFecha() == null) {
+
+            throw new BadRequestException("El campo fecha no puede ser nulo.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getHora() == null) {
+
+            throw new BadRequestException("El campo hora no puede ser nulo.");
+
+        }
+
+        //Comprobación Importe
+        if (asistenciaMedicaDTO.getImporte() < 0) {
+
+            throw new BadRequestException("El campo importe debe ser mayor que 0.");
+
+        }
+
+        AsistenciaMedica a = mapToAsistenciaMedica(asistenciaMedicaDTO);
+
+        a = asistenciaMedicaRepository.save(a);
+
+        return mapToDTO(a);
+
+    }
+
     public AsistenciaMedicaDTO getById(String id) {
 
         // Parsear el id a Long
@@ -74,6 +168,29 @@ public class AsistenciaMedicaService {
         Long idL = 0L;
         try {
             idL = Long.parseLong(id);
+
+            //Comprobar que el Seguro existe
+            List<Seguro> listaSeg = seguroRepository.findAll();
+
+            boolean existe = false;
+
+            for (Seguro s: listaSeg) {
+
+                if (asistenciaMedicaDTO.getIdSeguro() == s.getIdSeguro()) {
+
+                    existe = true;
+                    break;
+
+                }
+
+            }
+
+            if (!existe) {
+
+                throw new BadRequestException("El ID del seguro proveido no coincide con ningún seguro.");
+
+            }
+
         } catch (NumberFormatException e) {
             throw new BadRequestException("El campo ID no tiene un formato válido.");
         }
@@ -134,13 +251,16 @@ public class AsistenciaMedicaService {
 
             return null;
 
+        //Comprobación SeguroId coincide
+        } else if (a.getSeguro() != seguroRepository.getReferenceById(asistenciaMedicaDTO.getIdSeguro()))     {
+
+            throw new BadRequestException("El ID del seguro proveido no coincide con el ID del seguro original.");
+
         } else {
 
             AsistenciaMedica newA = mapToAsistenciaMedica(asistenciaMedicaDTO);
 
             newA.setIdAsistenciaMedica(a.getIdAsistenciaMedica());
-
-            newA.setSeguro(a.getSeguro());
 
             asistenciaMedicaRepository.save(newA);
 
