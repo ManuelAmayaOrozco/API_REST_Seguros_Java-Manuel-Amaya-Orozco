@@ -9,18 +9,20 @@ import com.es.segurosinseguros.Model.AsistenciaMedica;
 import com.es.segurosinseguros.Model.Seguro;
 import com.es.segurosinseguros.Repository.AsistenciaMedicaRepository;
 import com.es.segurosinseguros.Repository.SeguroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AsistenciaMedicaService {
 
-    private final SeguroRepository seguroRepository;
-    private final AsistenciaMedicaRepository asistenciaMedicaRepository;
+    @Autowired
+    private SeguroRepository seguroRepository;
 
-    public AsistenciaMedicaService(SeguroRepository seguroRepository, AsistenciaMedicaRepository asistenciaMedicaRepository) {
-        this.seguroRepository = seguroRepository;
-        this.asistenciaMedicaRepository = asistenciaMedicaRepository;
-    }
+    @Autowired
+    private AsistenciaMedicaRepository asistenciaMedicaRepository;
 
     public AsistenciaMedicaDTO getById(String id) {
 
@@ -47,6 +49,22 @@ public class AsistenciaMedicaService {
             // 3 Convertir a (AsistenciaMedica) a AsistenciaMedicaDTO
             return mapToDTO(a);
         }
+
+    }
+
+    public List<AsistenciaMedicaDTO> getAll() {
+
+        List<AsistenciaMedicaDTO> listaDeDTOs = new ArrayList<>();
+
+        List<AsistenciaMedica> listaAsi = asistenciaMedicaRepository.findAll();
+
+        for (AsistenciaMedica a: listaAsi) {
+
+            listaDeDTOs.add(mapToDTO(a));
+
+        }
+
+        return listaDeDTOs;
 
     }
 

@@ -8,6 +8,7 @@ import com.es.segurosinseguros.Model.AsistenciaMedica;
 import com.es.segurosinseguros.Model.Seguro;
 import com.es.segurosinseguros.Repository.AsistenciaMedicaRepository;
 import com.es.segurosinseguros.Repository.SeguroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,11 @@ import java.util.List;
 @Service
 public class SeguroService {
 
-    private final SeguroRepository seguroRepository;
-    private final AsistenciaMedicaRepository asistenciaMedicaRepository;
+    @Autowired
+    private SeguroRepository seguroRepository;
 
-    public SeguroService(SeguroRepository seguroRepository, AsistenciaMedicaRepository asistenciaMedicaRepository) {
-        this.seguroRepository = seguroRepository;
-        this.asistenciaMedicaRepository = asistenciaMedicaRepository;
-    }
+    @Autowired
+    private AsistenciaMedicaRepository asistenciaMedicaRepository;
 
     public SeguroDTO create(SeguroDTO seguroDTO) {
 

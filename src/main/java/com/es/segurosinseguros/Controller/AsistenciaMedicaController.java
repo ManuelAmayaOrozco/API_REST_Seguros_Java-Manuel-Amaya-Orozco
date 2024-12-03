@@ -1,9 +1,11 @@
 package com.es.segurosinseguros.Controller;
 
 import com.es.segurosinseguros.DTO.AsistenciaMedicaDTO;
+import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
 import com.es.segurosinseguros.Exception.NotFoundException;
 import com.es.segurosinseguros.Service.AsistenciaMedicaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/asistencias")
 public class AsistenciaMedicaController {
 
-    private final AsistenciaMedicaService asistenciaMedicaService;
-
-    public AsistenciaMedicaController(AsistenciaMedicaService asistenciaMedicaService) {
-        this.asistenciaMedicaService = asistenciaMedicaService;
-    }
+    @Autowired
+    private AsistenciaMedicaService asistenciaMedicaService;
 
     @GetMapping("/{id}")
     public ResponseEntity<AsistenciaMedicaDTO> getById(
@@ -56,6 +57,24 @@ public class AsistenciaMedicaController {
         } else {
 
             ResponseEntity<AsistenciaMedicaDTO> respuesta = new ResponseEntity<>(
+                    a, HttpStatus.OK
+            );
+            return respuesta;
+        }
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AsistenciaMedicaDTO>> getAll() {
+
+        List<AsistenciaMedicaDTO> a = asistenciaMedicaService.getAll();
+
+        if(a == null) {
+
+            throw new NotFoundException("No se encuentra ninguna asistencia médica para mostrar.");
+
+        } else {
+            ResponseEntity<List<AsistenciaMedicaDTO>> respuesta = new ResponseEntity<List<AsistenciaMedicaDTO>>(
                     a, HttpStatus.OK
             );
             return respuesta;

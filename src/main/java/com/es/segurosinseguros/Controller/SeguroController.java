@@ -6,6 +6,7 @@ import com.es.segurosinseguros.Exception.InternalServerErrorException;
 import com.es.segurosinseguros.Exception.NotFoundException;
 import com.es.segurosinseguros.Service.AsistenciaMedicaService;
 import com.es.segurosinseguros.Service.SeguroService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,11 @@ import java.util.List;
 @RequestMapping("/seguros")
 public class SeguroController {
 
-    private final SeguroService seguroService;
-    private final AsistenciaMedicaService asistenciaMedicaService;
+    @Autowired
+    private SeguroService seguroService;
 
-    public SeguroController(SeguroService seguroService, AsistenciaMedicaService asistenciaMedicaService) {
-        this.seguroService = seguroService;
-        this.asistenciaMedicaService = asistenciaMedicaService;
-    }
+    @Autowired
+    private AsistenciaMedicaService asistenciaMedicaService;
 
     @PostMapping
     public ResponseEntity<SeguroDTO> create(
