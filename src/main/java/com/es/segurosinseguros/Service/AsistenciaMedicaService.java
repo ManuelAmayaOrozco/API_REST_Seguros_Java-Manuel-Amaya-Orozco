@@ -270,6 +270,39 @@ public class AsistenciaMedicaService {
 
     }
 
+    public AsistenciaMedicaDTO delete(String id) {
+
+        // Parsear el id a Long
+        Long idL = 0L;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        AsistenciaMedica a = null;
+        try {
+            a = asistenciaMedicaRepository
+                    .findById(idL)
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al buscar la asistencia médica por su ID.");
+        }
+
+        if(a == null) {
+            throw new NotFoundException("No se encuentra ninguna asistencia médica con el ID especificado.");
+        } else {
+
+            AsistenciaMedicaDTO asistenciaMedicaDTO = mapToDTO(a);
+
+            asistenciaMedicaRepository.delete(a);
+
+            return asistenciaMedicaDTO;
+
+        }
+
+    }
+
     private AsistenciaMedicaDTO mapToDTO(AsistenciaMedica asistenciaMedica) {
         AsistenciaMedicaDTO asistenciaMedicaDTO = new AsistenciaMedicaDTO();
         asistenciaMedicaDTO.setIdAsistenciaMedica(asistenciaMedica.getIdAsistenciaMedica());

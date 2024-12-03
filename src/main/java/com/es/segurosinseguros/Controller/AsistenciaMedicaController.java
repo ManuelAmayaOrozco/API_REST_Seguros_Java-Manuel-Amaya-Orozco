@@ -5,6 +5,7 @@ import com.es.segurosinseguros.DTO.SeguroDTO;
 import com.es.segurosinseguros.Exception.BadRequestException;
 import com.es.segurosinseguros.Exception.InternalServerErrorException;
 import com.es.segurosinseguros.Exception.NotFoundException;
+import com.es.segurosinseguros.Model.AsistenciaMedica;
 import com.es.segurosinseguros.Service.AsistenciaMedicaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -109,6 +110,40 @@ public class AsistenciaMedicaController {
         } else {
             ResponseEntity<AsistenciaMedicaDTO> respuesta = new ResponseEntity<AsistenciaMedicaDTO>(
                     a, HttpStatus.OK
+            );
+            return respuesta;
+        }
+
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AsistenciaMedicaDTO> delete(
+            @PathVariable String id
+    ) {
+
+        //1º Compruebo que el id no es null
+        if (id == null) {
+            //LANZO UNA EXCEPCION PROPIA
+            /*
+            a) Qué código de estado devolveríais -> BAD_REQUEST (400)
+            b) Qué información daríais al cliente
+            -> Un mensaje: "El ID no tiene un formato válido."
+            -> La URI: localhost:8080/asistencias/x
+            c) Nombre a nuestra excepción -> BadRequestException
+             */
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //2º Si no viene vacio, llamo al Service
+        AsistenciaMedicaDTO a = asistenciaMedicaService.delete(id);
+
+        if(a == null) {
+
+            throw new InternalServerErrorException("Un error inesperado ha ocurrido al intentar eliminar la asistencia médica.");
+
+        } else {
+            ResponseEntity<AsistenciaMedicaDTO> respuesta = new ResponseEntity<AsistenciaMedicaDTO>(
+                    a, HttpStatus.NO_CONTENT
             );
             return respuesta;
         }
