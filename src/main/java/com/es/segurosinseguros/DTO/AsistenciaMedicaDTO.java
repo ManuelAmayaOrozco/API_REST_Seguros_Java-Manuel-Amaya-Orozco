@@ -42,6 +42,16 @@ public class AsistenciaMedicaDTO {
         this.importe = importe;
     }
 
+    public AsistenciaMedicaDTO(String breveDescripcion, String lugar, String explicacion, String tipoAsistencia, LocalDate fecha, LocalTime hora, double importe) {
+        this.breveDescripcion = breveDescripcion;
+        this.lugar = lugar;
+        this.explicacion = explicacion;
+        this.tipoAsistencia = tipoAsistencia;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.importe = importe;
+    }
+
     public AsistenciaMedicaDTO() {}
 
     //Getters y Setters

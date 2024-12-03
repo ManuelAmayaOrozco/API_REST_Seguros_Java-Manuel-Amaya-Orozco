@@ -68,6 +68,88 @@ public class AsistenciaMedicaService {
 
     }
 
+    public AsistenciaMedicaDTO update(String id, AsistenciaMedicaDTO asistenciaMedicaDTO) {
+
+        // Parsear el id a Long
+        Long idL = 0L;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("El campo ID no tiene un formato válido.");
+        }
+
+        //Comprobación Breve Descripción
+        if (asistenciaMedicaDTO.getBreveDescripcion().isEmpty()) {
+
+            throw new BadRequestException("El campo breveDescripción no puede estar vacío.");
+
+        }
+
+        //Comprobación Lugar
+        if (asistenciaMedicaDTO.getLugar().isEmpty()) {
+
+            throw new BadRequestException("El campo lugar no puede estar vacío.");
+
+        }
+
+        //Comprobación Explicación
+        if (asistenciaMedicaDTO.getExplicacion().isEmpty()) {
+
+            throw new BadRequestException("El campo explicación no puede estar vacío.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getTipoAsistencia() == null) {
+
+            throw new BadRequestException("El campo tipoAsistencia no puede ser nulo.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getFecha() == null) {
+
+            throw new BadRequestException("El campo fecha no puede ser nulo.");
+
+        }
+
+        //Comprobación tipoAsistencia
+        if (asistenciaMedicaDTO.getHora() == null) {
+
+            throw new BadRequestException("El campo hora no puede ser nulo.");
+
+        }
+
+        //Comprobación Importe
+        if (asistenciaMedicaDTO.getImporte() < 0) {
+
+            throw new BadRequestException("El campo importe debe ser mayor que 0.");
+
+        }
+
+        // Compruebo que el seguro existe en la BDD
+        AsistenciaMedica a = asistenciaMedicaRepository.findById(idL).orElse(null);
+
+        if (a == null) {
+
+            return null;
+
+        } else {
+
+            AsistenciaMedica newA = mapToAsistenciaMedica(asistenciaMedicaDTO);
+
+            newA.setIdAsistenciaMedica(a.getIdAsistenciaMedica());
+
+            newA.setSeguro(a.getSeguro());
+
+            asistenciaMedicaRepository.save(newA);
+
+            return mapToDTO(newA);
+
+        }
+
+    }
+
     private AsistenciaMedicaDTO mapToDTO(AsistenciaMedica asistenciaMedica) {
         AsistenciaMedicaDTO asistenciaMedicaDTO = new AsistenciaMedicaDTO();
         asistenciaMedicaDTO.setIdAsistenciaMedica(asistenciaMedica.getIdAsistenciaMedica());
